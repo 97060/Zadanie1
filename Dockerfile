@@ -5,6 +5,7 @@ COPY test.go ./
 COPY go.mod ./
 RUN export CGO_ENABLED=0 && \
 export GOOS=linux
+RUN echo $DOCKER_PLATFORM
 RUN if["$DOCKER_PLATFORM" = "linux/amd64"] then export GOARCH=amd64 \
 elif ["$DOCKER_PLATFORM" = "linux/arm64/v8"] then export GOARCH=arm64 \
 elif ["$DOCKER_PLATFORM" = "linux/arm/v7"] then export GOARCH=arm \
