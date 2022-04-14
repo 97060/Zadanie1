@@ -97,6 +97,7 @@ type Response struct {
 }
 
 func main() {
+	fmt.Println("Hello!")
 	LOG_FILE := "./app.log"
 	PORT := "8082"
 	logFile, err := os.OpenFile(LOG_FILE, os.O_APPEND|os.O_RDWR|os.O_CREATE,0644)
