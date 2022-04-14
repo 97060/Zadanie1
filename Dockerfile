@@ -8,6 +8,7 @@ RUN apt-get update
 RUN apt-get install wget -y
 RUN wget --no-check-certificate https://go.dev/dl/go1.18.1.linux-amd64.tar.gz
 RUN tar -C /usr/local -xzf go1.18.1.linux-amd64.tar.gz
+RUN export PATH=$PATH:/usr/local/go/bin
 RUN apt-get install xz-utils
 RUN ls -l
 RUN tar -C /usr/local -xf upx-3.96-amd64_linux.tar.xz
