@@ -19,7 +19,7 @@ RUN ls -l
 RUN /usr/local/upx-3.96-amd64_linux/upx --ultra-brute --overlay=strip ./server
 
 FROM scratch as main
-COPY --from=gobuilder /app/server /
+COPY --from=build /app/server /
 ADD ca-certificates.crt /etc/ssl/certs/
 EXPOSE 8082
 #ENTRYPOINT [ "./test" ]
