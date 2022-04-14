@@ -3,13 +3,11 @@ ARG DOCKER_PLATFORM=$TARGETPLATFORM
 WORKDIR /app
 COPY test.go ./
 COPY go.mod ./
+COPY setup.sh ./
 RUN export CGO_ENABLED=0 && \
 export GOOS=linux
 RUN uname -m
-RUN if["$DOCKER_PLATFORM" = "linux/amd64"] then export GOARCH=amd64 \
-elif ["$DOCKER_PLATFORM" = "linux/arm64/v8"] then export GOARCH=arm64 \
-elif ["$DOCKER_PLATFORM" = "linux/arm/v7"] then export GOARCH=arm \
-fi
+RUN bash setup.sh
 RUN /usr/local/go/bin/go build -ldflags="-s -w" test.go
 
 FROM ubuntu:latest AS build
