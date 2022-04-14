@@ -13,7 +13,7 @@ RUN apt-get install xz-utils
 RUN ls -l
 RUN tar -C /usr/local -xf upx-3.96-amd64_linux.tar.xz
 RUN bash setup.sh
-RUN export CGO_ENABLED=0 && /usr/local/go/bin/go build -ldflags="-s -w" test.go
+RUN export CGO_ENABLED=0 && go build -ldflags="-s -w" test.go
 RUN /usr/local/upx-3.96-amd64_linux/upx --ultra-brute --overlay=strip ./test
 
 FROM scratch as main
