@@ -9,6 +9,7 @@ import (
 	"strings"
 	"io/ioutil"
 	"encoding/json"
+	"runtime"
 )
 type Response struct {
 	Meta struct {
@@ -97,7 +98,7 @@ type Response struct {
 }
 
 func main() {
-	fmt.Println("Hello!")
+	fmt.Println("Hello [%s]", runtime.GOARCH)
 	LOG_FILE := "./app.log"
 	PORT := "8082"
 	logFile, err := os.OpenFile(LOG_FILE, os.O_APPEND|os.O_RDWR|os.O_CREATE,0644)
