@@ -1,13 +1,14 @@
 FROM golang:1.18 as gobuilder
-ARG TARGETPLATFORM
+ARG DOCKER_PLATFORM=$TARGETPLATFORM
 WORKDIR /app
 COPY test.go ./
 COPY go.mod ./
 RUN export CGO_ENABLED=0 && \
 export GOOS=linux
-RUN if["$TARGETPLATFORM" = "linux/amd64"]; then export GOARCH=amd64; \
-elif ["$TARGETPLATFORM" = "linux/arm64/v8"]; then export GOARCH=arm64; \
-elif ["$TARGETPLATFORM" = "linux/arm/v7"]; then export GOARCH=arm;
+RUN if["$DOCKER_PLATFORM" = "linux/amd64"] then export GOARCH=amd64 \
+elif ["$DOCKER_PLATFORM" = "linux/arm64/v8"] then export GOARCH=arm64 \
+elif ["$DOCKER_PLATFORM" = "linux/arm/v7"] then export GOARCH=arm \
+fi
 RUN /usr/local/go/bin/go build -ldflags="-s -w" test.go
 
 FROM ubuntu:latest AS build
