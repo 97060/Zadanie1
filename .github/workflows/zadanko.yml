@@ -6,7 +6,7 @@ on:
 
 jobs:
   build-push-images:
-    name: Budowa i publikacja obrazw na repozytorium
+    name: Budowa i publikacja obrazw na repozytorium 
     runs-on: ubuntu-latest
 
     steps:
