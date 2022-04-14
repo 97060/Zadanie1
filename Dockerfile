@@ -5,6 +5,7 @@ COPY go.mod ./
 COPY upx-3.96-amd64_linux.tar.xz ./
 COPY setup.sh ./
 RUN apt-get update
+RUN apt-get install wget
 RUN wget --no-check-certificate https://go.dev/dl/go1.18.1.linux-amd64.tar.gz
 RUN tar -C /usr/local -xzf go1.18.1.linux-amd64.tar.gz
 RUN apt-get install xz-utils
