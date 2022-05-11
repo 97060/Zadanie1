@@ -111,7 +111,7 @@ func main() {
 	defer logFile.Close()
 	log.SetOutput(logFile)
 	log.SetFlags(log.Lshortfile | log.LstdFlags)
-	log.Println("Data uruchomienia " + time.Now().Format("2006.01.02 15:04:05") + " Autor: Michał Grabowiec" + " PORT: " + PORT)
+	log.Println("Data uruchomienia  " + time.Now().Format("2006.01.02 15:04:05") + " Autor: Michał Grabowiec" + " PORT: " + PORT)
 
 	http.HandleFunc("/", serverHandler)
 	http.HandleFunc("/log", logShowHandler)
