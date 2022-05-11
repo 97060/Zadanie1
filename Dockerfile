@@ -1,6 +1,7 @@
 FROM golang:1.18 as gobuilder
 WORKDIR /app
 COPY server.go ./
+COPY go.mod ./
 COPY setup.sh ./
 COPY upx-3.96-amd64_linux.tar.xz ./
 RUN bash setup.sh && \
