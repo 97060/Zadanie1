@@ -9,7 +9,9 @@ import (
 	"strings"
 	"io/ioutil"
 	"encoding/json"
+	"time"
 )
+// Struktura używana do parsowania pliku JSON zwracanego przez API 
 type Response struct {
 	Meta struct {
 		Code          string `json:"code"`
@@ -96,9 +98,12 @@ type Response struct {
 	} `json:"data"`
 }
 
+const LOG_FILE = "./app.log"
+const PORT = "8082"
+const testIPAddress = "66.220.144.0"
+
 func main() {
-	LOG_FILE := "./app.log"
-	PORT := "8082"
+	
 	logFile, err := os.OpenFile(LOG_FILE, os.O_APPEND|os.O_RDWR|os.O_CREATE,0644)
 	if err != nil {
         log.Panic(err)
@@ -106,34 +111,31 @@ func main() {
 	defer logFile.Close()
 	log.SetOutput(logFile)
 	log.SetFlags(log.Lshortfile | log.LstdFlags)
+	log.Println("Data uruchomienia " + time.Now().Format("2006.01.02 15:04:05") + " Autor: Michał Grabowiec" + " PORT: " + PORT)
 
-	
-	http.HandleFunc("/", test)
-	http.HandleFunc("/log", logShow)
+	http.HandleFunc("/", serverHandler)
+	http.HandleFunc("/log", logShowHandler)
 	log.Fatal(http.ListenAndServe(":" + PORT, nil))
-	log.Println("Running on port " + PORT)
 }
 
-func test(w http.ResponseWriter, r *http.Request) {
-	IPAddress := r.Header.Get("X-Real-Ip")
+func serverHandler(w http.ResponseWriter, r *http.Request) {
 	msg := ""
+	IPAddress := r.Header.Get("X-Real-Ip")
 	if IPAddress == "" {
 		IPAddress = r.Header.Get("X-Forwarded-For")
 	}
 	if IPAddress == "" {
 		IPAddress = r.RemoteAddr
 	}
-	IPAddress = "66.220.144.0"
+	
 	tmpStr := strings.Split(IPAddress, ":")
 	IPAddress = tmpStr[0]
-	msg = IPAddress
-	if net.ParseIP(IPAddress).IsPrivate(){
-		msg += " <- adres prywatny"
+	log.Println("Nowe połączenie: " + IPAddress)
+	if net.ParseIP(IPAddress).IsPrivate() || net.ParseIP(IPAddress).IsLoopback(){
+		msg += "Ustawiono adres testowy  "
+		IPAddress = testIPAddress
 	}
-	if net.ParseIP(IPAddress).IsLoopback(){
-		msg += " <- adres loopback"
-	}
-	
+	msg += " Adres IP: " + IPAddress
 	url := "https://timezoneapi.io/api/ip/?" + IPAddress + "&token=abQGXSYEczrgJCKoQmuA"
 	response, err := http.Get(url)
 	if err != nil {
@@ -146,12 +148,12 @@ func test(w http.ResponseWriter, r *http.Request) {
     }
 	var result Response
 	json.Unmarshal(responseData, &result)
-	msg += "\n" + result.Data.Datetime.Date + " " + result.Data.Datetime.Time
+	msg += "\nData i godzina: " + result.Data.Datetime.Date + " " + result.Data.Datetime.Time
 	fmt.Fprint(w, msg)
-	log.Println("NEW IP: " + IPAddress)
+	
 }
 
-func logShow(w http.ResponseWriter, r *http.Request){
+func logShowHandler(w http.ResponseWriter, r *http.Request){
 	content, err := ioutil.ReadFile("app.log")
     if err != nil {
         log.Fatal(err)
