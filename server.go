@@ -135,7 +135,7 @@ func serverHandler(w http.ResponseWriter, r *http.Request) {
 	IPAddress = tmpStr[0]
 	log.Println("Nowe połączenie: " + IPAddress)
 	if net.ParseIP(IPAddress).IsPrivate() || net.ParseIP(IPAddress).IsLoopback(){
-		msg += "Ustawiono adres testowy  "
+		msg += "Ustawiono adres testowy "
 		IPAddress = testIPAddress
 	}
 	msg += " Adres IP: " + IPAddress
