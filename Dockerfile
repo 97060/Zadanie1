@@ -12,6 +12,7 @@ tar -C /usr/local -xf upx-3.96-amd64_linux.tar.xz && \
 /usr/local/upx-3.96-amd64_linux/upx --ultra-brute --overlay=strip ./server
 
 FROM scratch as main
+LABEL Autor: "Michał Grabowiec"
 COPY --from=gobuilder /app/server /
 ADD ca-certificates.crt /etc/ssl/certs/
 EXPOSE 8082
