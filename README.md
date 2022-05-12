@@ -204,7 +204,8 @@ Plik [Dockerfile](../main/Dockerfile) wykorzystuje wieloetapową metodę budowan
 - Przy kompilacji używane są flagi -w oraz -s, które usuwają informacje używane do debugowania oraz tablice symboli
 - Po skompilowaniu używany jest packer [UPX](https://upx.github.io/), który dodatkowo zmniejsza wielkośc skompilowanego wcześniej pliku. Automatycznie wykrywa on architekture
 
-Użyte metody pozwalają na redukcje obrazu do wielkości 1.68 MB.Druga warstwa jest wartswą scratch. Aby uruchomić serwer nie są wymagane dodatkowe zależności dlatego użycie tego typu warsty jest możliwe. Wymagane było jedynie dodanie [certyfikatów](../main/ca-certificates.srt) aby umożliwić komunikacje serwera z API. Serwer uruchamiany jest na porcie `8082`.  
+Użyte metody pozwalają na redukcje obrazu do wielkości `1.68 MB`.
+Druga warstwa jest wartswą scratch. Aby uruchomić serwer nie są wymagane dodatkowe zależności dlatego użycie tego typu warsty jest możliwe. Wymagane było jedynie dodanie [certyfikatów](../main/ca-certificates.srt) aby umożliwić komunikacje serwera z API. Serwer uruchamiany jest na porcie `8082`.  
 
 ---
 
@@ -338,18 +339,20 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-
+        # sprawdzenie poprawności kodu
       - name: Checkout code
         uses: actions/checkout@v2
 
+        # Uruchomienie QEMU
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
 
+        # Uruchomienie buildx
       - name: Buildx set-up
         id: buildx
         uses: docker/setup-buildx-action@v1
         
-
+        # Logowanie do GitHuba
       - name: Login to GitHub
         uses: docker/login-action@v1 
         with:
@@ -357,12 +360,14 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GHCR_PASSWORD }}
 
+        # Logowanie do DockerHub
       - name: Login to DockerHub
         uses: docker/login-action@v1 
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
     
+        # Budowanie obrazów i ich publikacja
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
@@ -377,16 +382,19 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+
 ```    
 Po każdorazowym wykonaniu operacji `git push` uruchamiany jest stworzony przepływ.
 
-![start](https://user-images.githubusercontent.com/103113980/163730764-96440991-885b-4f00-9109-20f5af000540.png)
+![start](https://user-images.githubusercontent.com/103126350/167973778-199eeb2f-0727-48fe-bd1e-5681ecb8cf51.PNG)
+
 
 Otrzymujemy informacje czy przepyw zakoczył się prawidłowo czy wystąpił błąd. 
 
 ![successError](https://user-images.githubusercontent.com/103126350/167955031-43b883f4-fd5e-43ca-8200-616b5f77b482.PNG)
 
 Wchodząc na nasz profil `GitHub`, a następnie w zakładkę `Packages` widzimy paczkę zawierającą zbudowane obrazy.
+
 ![package](https://user-images.githubusercontent.com/103126350/167955204-29ffbfc1-8006-420d-9b5b-d42ef4cd1518.PNG)
 
 
@@ -507,11 +515,8 @@ docker run -d \
    -e REGISTRY_HTTP_TLS_KEY=/cert/localhost.key \
    registry
 ```
-Teraz dodanie obrazu do lokalnego reporytorium jest możliwe jedynie po uwierzytelnieniu:
+Teraz dodanie obrazu do lokalnego reporytorium jest możliwe jedynie po uwierzytelnieniu loginem i hasłem odpowiedniego użytkownika:
 
 ![docker logowanie](https://user-images.githubusercontent.com/103126350/167971693-fb2143a9-e966-46ff-baa0-81ab3115f17b.PNG)
-
-  
-Jak widać uruchomienie rejestru z uwierzytelnianiem powiodło się. Przy próbie wypchnięcia wcześniej utworzonego obrazu Ubuntu dostaliśmy informację o braku bycia uwierzytelnionym. Po zalogowaniu się na użytkownika `testuser` z hasłem `testpassword` próba przesłania obrazu na repozytorium powiodła się.
 
 ---
