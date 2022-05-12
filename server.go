@@ -98,9 +98,9 @@ type Response struct {
 	} `json:"data"`
 }
 
-const LOG_FILE = "./app.log"
-const PORT = "8082"
-const testIPAddress = "66.220.144.0"
+const LOG_FILE = "./app.log" // Ścieżka do pliku z logami
+const PORT = "8082" // Port na jakim działa serwer
+const testIPAddress = "66.220.144.0" // Adres IP do celów pokazania działania serwera
 
 func main() {
 	
@@ -111,15 +111,18 @@ func main() {
 	defer logFile.Close()
 	log.SetOutput(logFile)
 	log.SetFlags(log.Lshortfile | log.LstdFlags)
+	// Wypisanie danych startowych do logu
 	log.Println("Data uruchomienia  " + time.Now().Format("2006.01.02 15:04:05") + " Autor: Michał Grabowiec" + " PORT: " + PORT)
 
+	// Obsługa odpowiednich ścieżek
 	http.HandleFunc("/", serverHandler)
 	http.HandleFunc("/log", logShowHandler)
 	log.Fatal(http.ListenAndServe(":" + PORT, nil))
 }
 
+// Główna funkcja zapewniająca funkcjonalność serwera 
 func serverHandler(w http.ResponseWriter, r *http.Request) {
-	msg := ""
+	msg := "" // Dane do wypisania
 	IPAddress := r.Header.Get("X-Real-Ip")
 	if IPAddress == "" {
 		IPAddress = r.Header.Get("X-Forwarded-For")
@@ -136,7 +139,7 @@ func serverHandler(w http.ResponseWriter, r *http.Request) {
 		IPAddress = testIPAddress
 	}
 	msg += " Adres IP: " + IPAddress
-	url := "https://timezoneapi.io/api/ip/?" + IPAddress + "&token=abQGXSYEczrgJCKoQmuA"
+	url := "https://timezoneapi.io/api/ip/?" + IPAddress + "&token=abQGXSYEczrgJCKoQmuA" // API do pobrania daty i czasu dla danego IP
 	response, err := http.Get(url)
 	if err != nil {
         fmt.Print(err.Error())
@@ -153,6 +156,7 @@ func serverHandler(w http.ResponseWriter, r *http.Request) {
 	
 }
 
+// Funkcja obsługująca wyświetlanie logów
 func logShowHandler(w http.ResponseWriter, r *http.Request){
 	content, err := ioutil.ReadFile("app.log")
     if err != nil {
